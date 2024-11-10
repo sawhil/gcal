@@ -2,66 +2,38 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { useAtom } from "jotai";
-import { useState } from "react";
-import EventCreationModal from "./components/EventCreationModal";
-import EventPreviewModal from "./components/EventPreviewModal";
-import {
-  dragEventAtom,
-  eventsAtom,
-  selectedColorAtom,
-  selectedEventAtom,
-  getFilteredEventsAtom,
-} from "./store";
-import { COLOR_SELECTION_OPTIONS } from "./constants";
-import { Select } from "antd";
+import ColorFilterContainer from "./components/ColorFilterContainer";
+import EventModals from "./components/EventModal";
+import useCalendarService from "./hooks/useCalendarService";
 
 function App() {
-  const [selectInfo, setSelectInfo] = useState(null);
-  const [events] = useAtom(eventsAtom);
-  const [filteredEvents] = useAtom(getFilteredEventsAtom);
-  const [, dragEvent] = useAtom(dragEventAtom);
-  const [, setSelectedEventId] = useAtom(selectedEventAtom);
-  const [selectedColor, setSelectedColor] = useAtom(selectedColorAtom);
-  const [isEventCreationModalOpen, setIsEventCreationModalOpen] =
-    useState(false);
-
-  const [isEventPreviewModalOpen, setIsEventPreviewModalOpen] = useState(false);
-
-  function handleDateSelect(selectInfo) {
-    setSelectInfo(selectInfo);
-    setIsEventCreationModalOpen(true);
-  }
-
-  const handleEventClick = (selectInfo) => {
-    const eventId = selectInfo.event.id;
-    setSelectedEventId(eventId);
-    setIsEventPreviewModalOpen(true);
-  };
+  const {
+    selectInfo,
+    filteredEvents,
+    dragEvent,
+    selectedColor,
+    setSelectedColor,
+    isEventCreationModalOpen,
+    setIsEventCreationModalOpen,
+    isEventPreviewModalOpen,
+    setIsEventPreviewModalOpen,
+    handleDateSelect,
+    handleEventClick,
+  } = useCalendarService();
 
   return (
     <div className="App">
-      <label>Select Event Color to filter them out : </label>
-      <Select
-        showSearch
-        value={selectedColor}
-        optionFilterProp="label"
-        onChange={(color) => setSelectedColor(color)}
-        options={COLOR_SELECTION_OPTIONS}
+      <ColorFilterContainer
+        selectedColor={selectedColor}
+        setSelectedColor={setSelectedColor}
       />
-      {isEventCreationModalOpen && (
-        <EventCreationModal
-          selectInfo={selectInfo}
-          isModalOpen={isEventCreationModalOpen}
-          setIsModalOpen={setIsEventCreationModalOpen}
-        />
-      )}
-      {isEventPreviewModalOpen && (
-        <EventPreviewModal
-          isModalOpen={isEventPreviewModalOpen}
-          setIsModalOpen={setIsEventPreviewModalOpen}
-        />
-      )}
+      <EventModals
+        isEventCreationModalOpen={isEventCreationModalOpen}
+        setIsEventCreationModalOpen={setIsEventCreationModalOpen}
+        isEventPreviewModalOpen={isEventPreviewModalOpen}
+        setIsEventPreviewModalOpen={setIsEventPreviewModalOpen}
+        selectInfo={selectInfo}
+      />
       <div className="full-calendar-container">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
