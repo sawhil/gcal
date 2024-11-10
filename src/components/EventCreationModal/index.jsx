@@ -1,29 +1,21 @@
 /* eslint-disable react/prop-types */
-import { v4 as uuid } from "uuid";
-import { isValidEvent } from "../../utils";
+import { Checkbox, DatePicker, Input, Modal } from "antd";
 import { useAtom } from "jotai";
-import { addNewEventAtom } from "../../store";
-import { Modal, Input, DatePicker, Checkbox } from "antd";
-import { useState } from "react";
-import { ModalContainer } from "./StyledComponents";
 import moment from "moment";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { v4 as uuid } from "uuid";
+import { addNewEventAtom } from "../../store";
+import { isValidEvent } from "../../utils";
 import ColorSelect from "./components/ColorSelect";
+import { ModalContainer } from "./StyledComponents";
 
-const EventCreationModal = ({
-  isModalOpen,
-  selectInfo,
-  handleOk,
-  handleCancel,
-}) => {
+const EventCreationModal = ({ isModalOpen, setIsModalOpen, selectInfo }) => {
   const [, addNewEvent] = useAtom(addNewEventAtom);
   const [title, setTitle] = useState("");
   const [allDay, setAllDay] = useState(selectInfo?.allDay || false);
   const [color, setColor] = useState(selectInfo?.color || "#ff0000");
-  const [startTime, setStartTime] = useState(
-    moment(selectInfo?.startStr) || "",
-  );
-  const [endTime, setEndTime] = useState(moment(selectInfo?.endStr) || "");
+  const [startTime, setStartTime] = useState(moment(selectInfo?.start) || "");
+  const [endTime, setEndTime] = useState(moment(selectInfo?.end) || "");
   const [isCreateEventButtonDisabled, setIsCreateEventButtonDisabled] =
     useState(false);
 
@@ -44,7 +36,7 @@ const EventCreationModal = ({
       addNewEvent(newEventObject); // adds the new event to the events array
     }
     setTitle("");
-    handleOk();
+    setIsModalOpen(false);
   };
 
   useEffect(() => {
@@ -55,15 +47,17 @@ const EventCreationModal = ({
   }, [selectInfo]);
 
   useEffect(() => {
-    setIsCreateEventButtonDisabled(!isValidEvent({ title }));
-  }, [title]);
+    setIsCreateEventButtonDisabled(
+      !isValidEvent({ title, start: startTime, end: endTime, allDay }),
+    );
+  }, [title, startTime, endTime, allDay]);
 
   return (
     <Modal
       title="Create Event"
       open={isModalOpen}
       onOk={onOk}
-      onCancel={handleCancel}
+      onCancel={() => setIsModalOpen(false)}
       okText="Create event"
       cancelText="Close"
       okButtonProps={{ disabled: isCreateEventButtonDisabled }}

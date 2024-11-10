@@ -19,5 +19,6 @@ export const ModalContainer = styled.div`
 
   .label {
     width: 100px;
+    font-weight: bold;
   }
 `;

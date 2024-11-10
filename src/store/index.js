@@ -20,7 +20,7 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { EMPTY_EVENT } from "../constants";
-import { addEvent, updateEvent, deleteEvent } from "../utils";
+import { addEvent, updateEvent, deleteEvent, dragEvent } from "../utils";
 
 export const eventsAtom = atomWithStorage("GCAL_EVENTS", []);
 
@@ -31,6 +31,8 @@ export const addNewEventAtom = atom(
   },
 );
 export const selectedEventAtom = atom(null);
+export const selectedColorAtom = atom("ALL");
+
 export const getEventAtom = atom((get) => {
   const events = get(eventsAtom);
   const selectedId = get(selectedEventAtom);
@@ -39,6 +41,17 @@ export const getEventAtom = atom((get) => {
     : null;
 });
 
+export const getFilteredEventsAtom = atom((get) => {
+  const events = get(eventsAtom);
+  const selectedColor = get(selectedColorAtom);
+  if (selectedColor === "ALL") return events;
+  return (
+    events.filter((event) => event.backgroundColor === selectedColor) || []
+  );
+});
+
+// We can use this to update the event in the store
+// By giving an edit CTA in the EventCreationModal
 export const updateEventAtom = atom(
   () => EMPTY_EVENT,
   (get, set, changeInfo) => {
@@ -49,7 +62,7 @@ export const updateEventAtom = atom(
 export const dragEventAtom = atom(
   () => EMPTY_EVENT,
   (get, set, changeInfo) => {
-    set(eventsAtom, updateEvent(get(eventsAtom), changeInfo));
+    set(eventsAtom, dragEvent(get(eventsAtom), changeInfo));
   },
 );
 

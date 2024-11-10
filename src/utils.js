@@ -1,3 +1,4 @@
+import moment from "moment";
 export const addEvent = (events, event) => {
   return [
     ...events,
@@ -32,7 +33,10 @@ export const dragEvent = (events, changeInfo) => {
   const updatedEvents = [...events];
   const findEvent = events.find((e) => e.id === id);
   if (!findEvent) return;
-  updatedEvents[findIndex] = { ...findEvent, ...event };
+  updatedEvents[findIndex] = {
+    ...findEvent,
+    ...{ start: event.startStr, end: event.endStr },
+  };
   return updatedEvents;
 };
 
@@ -45,5 +49,17 @@ export const deleteEvent = (events, deleteEventId) => {
 };
 
 export const isValidEvent = (event) => {
-  return event.title && event.title.length > 0;
+  const { title, allDay } = event;
+
+  return (
+    title &&
+    title.length > 0 &&
+    (allDay ? true : isValidDateRange(event.start, event.end))
+  );
+};
+
+const isValidDateRange = (start, end) => {
+  if (!start || !end) return false;
+  console.log(start, end);
+  return moment(start).isSameOrBefore(moment(end));
 };

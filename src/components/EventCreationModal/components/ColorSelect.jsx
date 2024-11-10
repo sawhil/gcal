@@ -9,7 +9,7 @@ const ColorSelect = ({ value, onChange }) => {
           style={{
             width: "16px",
             height: "16px",
-            borderRadius: "4px",
+            borderRadius: "100%",
             backgroundColor: color.value,
             border: "1px solid #d9d9d9",
           }}
