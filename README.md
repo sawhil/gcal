@@ -27,15 +27,14 @@ To get started with the project, clone the repository and install the dependenci
 ```bash
 git clone <repository-url>
 cd <repository-directory>
-npm install
+yarn
 ```
-
 
 Then, you can run the application in development mode:
-```bash
-npm run dev
-```
 
+```bash
+yarn dev
+```
 
 ## Improvements
 
