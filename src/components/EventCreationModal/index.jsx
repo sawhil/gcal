@@ -8,6 +8,7 @@ import { useState } from "react";
 import { ModalContainer } from "./StyledComponents";
 import moment from "moment";
 import { useEffect } from "react";
+import ColorSelect from "./components/ColorSelect";
 
 const EventCreationModal = ({
   isModalOpen,
@@ -15,13 +16,16 @@ const EventCreationModal = ({
   handleOk,
   handleCancel,
 }) => {
-  const [, setAddNewEvent] = useAtom(addNewEventAtom);
+  const [, addNewEvent] = useAtom(addNewEventAtom);
   const [title, setTitle] = useState("");
+  const [allDay, setAllDay] = useState(selectInfo?.allDay || false);
+  const [color, setColor] = useState(selectInfo?.color || "#ff0000");
   const [startTime, setStartTime] = useState(
     moment(selectInfo?.startStr) || "",
   );
   const [endTime, setEndTime] = useState(moment(selectInfo?.endStr) || "");
-  const [allDay, setAllDay] = useState(selectInfo?.allDay || false);
+  const [isCreateEventButtonDisabled, setIsCreateEventButtonDisabled] =
+    useState(false);
 
   const onOk = () => {
     let calendarApi = selectInfo.view.calendar;
@@ -33,9 +37,11 @@ const EventCreationModal = ({
       startStr: moment(startTime).format(),
       endStr: moment(endTime).format(),
       allDay,
+      backgroundColor: color,
+      borderColor: color,
     };
     if (isValidEvent(newEventObject)) {
-      setAddNewEvent(newEventObject); // adds the new event to the events array
+      addNewEvent(newEventObject); // adds the new event to the events array
     }
     setTitle("");
     handleOk();
@@ -45,7 +51,13 @@ const EventCreationModal = ({
     setStartTime(moment(selectInfo?.startStr) || "");
     setEndTime(moment(selectInfo?.endStr) || "");
     setAllDay(selectInfo?.allDay || false);
+    setColor(selectInfo?.color || "#3788d8");
   }, [selectInfo]);
+
+  useEffect(() => {
+    setIsCreateEventButtonDisabled(!isValidEvent({ title }));
+  }, [title]);
+
   return (
     <Modal
       title="Create Event"
@@ -54,6 +66,7 @@ const EventCreationModal = ({
       onCancel={handleCancel}
       okText="Create event"
       cancelText="Close"
+      okButtonProps={{ disabled: isCreateEventButtonDisabled }}
     >
       <ModalContainer>
         <div className="row">
@@ -100,6 +113,10 @@ const EventCreationModal = ({
             </div>
           </>
         )}
+        <div className="row">
+          <span className="label">Color</span>
+          <ColorSelect value={color} onChange={(color) => setColor(color)} />
+        </div>
       </ModalContainer>
     </Modal>
   );

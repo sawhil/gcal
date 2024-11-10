@@ -30,6 +30,14 @@ export const addNewEventAtom = atom(
     set(eventsAtom, addEvent(get(eventsAtom), eventObject));
   },
 );
+export const selectedEventAtom = atom(null);
+export const getEventAtom = atom((get) => {
+  const events = get(eventsAtom);
+  const selectedId = get(selectedEventAtom);
+  return selectedId
+    ? events.find((event) => event.id === selectedId) || null
+    : null;
+});
 
 export const updateEventAtom = atom(
   () => EMPTY_EVENT,

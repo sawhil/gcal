@@ -1,5 +1,3 @@
-import dayjs from "dayjs";
-
 export const addEvent = (events, event) => {
   return [
     ...events,
@@ -10,6 +8,8 @@ export const addEvent = (events, event) => {
       start: event.startStr,
       end: event.endStr,
       allDay: event.allDay,
+      backgroundColor: event.backgroundColor,
+      borderColor: event.borderColor,
     },
   ];
 };
@@ -45,23 +45,5 @@ export const deleteEvent = (events, deleteEventId) => {
 };
 
 export const isValidEvent = (event) => {
-  return true;
+  return event.title && event.title.length > 0;
 };
-
-const range = (start, end) => {
-  const result = [];
-  for (let i = start; i < end; i++) {
-    result.push(i);
-  }
-  return result;
-};
-
-export const disabledDate = (current) => {
-  // Can not select days before today and today
-  return current && current < dayjs().startOf("day");
-};
-export const disabledDateTime = () => ({
-  disabledHours: () => range(0, 24).splice(4, 20),
-  disabledMinutes: () => range(30, 60),
-  disabledSeconds: () => [55, 56],
-});

@@ -8,9 +8,13 @@ import {
   updateEventAtom,
   dragEventAtom,
   deleteEventAtom,
+  selectedEventAtom,
 } from "./store";
 import { useState } from "react";
+import { Layout } from "antd";
+const { Content, Sider } = Layout;
 import EventCreationModal from "./components/EventCreationModal";
+import EventPreviewModal from "./components/EventPreviewModal";
 
 function App() {
   const [selectInfo, setSelectInfo] = useState(null);
@@ -18,65 +22,89 @@ function App() {
   const [, updateEvent] = useAtom(updateEventAtom);
   const [, dragEvent] = useAtom(dragEventAtom);
   const [, deleteEvent] = useAtom(deleteEventAtom);
+  const [, setSelectedEventId] = useAtom(selectedEventAtom);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
+  const [isEventCreationModalOpen, setIsEventCreationModalOpen] =
+    useState(false);
+
+  const [isEventPreviewModalOpen, setIsEventPreviewModalOpen] = useState(false);
+
+  const showEventCreationModal = () => {
+    setIsEventCreationModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleEventCreationModalOk = () => {
+    setIsEventCreationModalOpen(false);
   };
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const handleEventCreationModalCancel = () => {
+    setIsEventCreationModalOpen(false);
   };
 
   function handleDateSelect(selectInfo) {
     setSelectInfo(selectInfo);
-    showModal();
+    showEventCreationModal();
   }
 
   const handleEventClick = (selectInfo) => {
-    // let eventObj = selectInfo.view.calendar.getEventById(selectInfo.event.id);
-    // eventObj.remove(); - Delete the event
-    // eventObj.setProp("backgroundColor", "green"); // setProp will update the non date related properties
     const eventId = selectInfo.event.id;
-    deleteEvent(eventId);
+    setSelectedEventId(eventId);
+    setIsEventPreviewModalOpen(true);
+    // deleteEvent(eventId);
   };
 
   return (
-    <div className="App">
-      <EventCreationModal
-        selectInfo={selectInfo}
-        isModalOpen={isModalOpen}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-      />
-      <div className="full-calendar-container">
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay",
+    <Layout hasSider>
+      <Sider>
+        <div className="demo-logo-vertical" />
+      </Sider>
+      <Layout
+        style={{
+          marginInlineStart: 200,
+        }}
+      >
+        <Content
+          style={{
+            margin: "24px 16px 0",
+            overflow: "initial",
           }}
-          initialView="dayGridMonth"
-          select={handleDateSelect}
-          eventClick={handleEventClick}
-          editable
-          selectable
-          dayMaxEvents={true}
-          events={events}
-          eventChange={(changeInfo) => {
-            console.log("uncaught eventChange", {
-              oldColor: changeInfo.oldEvent.toPlainObject(),
-              newColor: changeInfo.event.toPlainObject(),
-            });
-          }}
-          // eventDrop={function(){}}     // Called when event dropped
-          // eventResize={function(){}}   // Called when event resized
-        />
-      </div>
-    </div>
+        >
+          <div className="App">
+            {isEventCreationModalOpen && (
+              <EventCreationModal
+                selectInfo={selectInfo}
+                isModalOpen={isEventCreationModalOpen}
+                handleOk={handleEventCreationModalOk}
+                handleCancel={handleEventCreationModalCancel}
+              />
+            )}
+            {isEventPreviewModalOpen && (
+              <EventPreviewModal
+                isModalOpen={isEventPreviewModalOpen}
+                setIsModalOpen={setIsEventPreviewModalOpen}
+              />
+            )}
+            <div className="full-calendar-container">
+              <FullCalendar
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay",
+                }}
+                initialView="dayGridMonth"
+                select={handleDateSelect}
+                eventClick={handleEventClick}
+                editable
+                selectable
+                dayMaxEvents={true}
+                events={events}
+                // eventDrop={function(){}}     // Called when event dragged and dropped
+                // eventResize={function(){}}   // Called when event resized
+              />
+            </div>
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
 
