@@ -1,3 +1,4 @@
+// Import required FullCalendar plugins and components
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
@@ -6,7 +7,12 @@ import ColorFilterContainer from "./components/ColorFilterContainer";
 import EventModals from "./components/EventModal";
 import useCalendarService from "./hooks/useCalendarService";
 
+/**
+ * Main App component that renders the calendar interface
+ * Handles event creation, preview, and filtering functionality
+ */
 function App() {
+  // Destructure all required states and handlers from calendar service hook
   const {
     selectInfo,
     filteredEvents,
@@ -23,10 +29,12 @@ function App() {
 
   return (
     <div className="App">
+      {/* Color filter component for event filtering */}
       <ColorFilterContainer
         selectedColor={selectedColor}
         setSelectedColor={setSelectedColor}
       />
+      {/* Modal components for event creation and preview */}
       <EventModals
         isEventCreationModalOpen={isEventCreationModalOpen}
         setIsEventCreationModalOpen={setIsEventCreationModalOpen}
@@ -35,6 +43,7 @@ function App() {
         selectInfo={selectInfo}
       />
       <div className="full-calendar-container">
+        {/* FullCalendar component with configuration */}
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           headerToolbar={{

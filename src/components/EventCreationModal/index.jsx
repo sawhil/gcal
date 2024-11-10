@@ -1,11 +1,19 @@
 /* eslint-disable react/prop-types */
+// Import required components and libraries
 import { Checkbox, DatePicker, Input, Modal } from "antd";
 import moment from "moment";
 import ColorSelect from "./components/ColorSelect";
 import { ModalContainer } from "./StyledComponents";
 import useEventCreationService from "../../hooks/useEventCreationService";
 
+/**
+ * Modal component for creating calendar events
+ * @param {boolean} isModalOpen - Controls modal visibility
+ * @param {function} setIsModalOpen - Function to update modal visibility
+ * @param {object} selectInfo - Information about the selected calendar slot
+ */
 const EventCreationModal = ({ isModalOpen, setIsModalOpen, selectInfo }) => {
+  // Get event creation state and handlers from custom hook
   const {
     title,
     setTitle,
@@ -32,6 +40,7 @@ const EventCreationModal = ({ isModalOpen, setIsModalOpen, selectInfo }) => {
       okButtonProps={{ disabled: isCreateEventButtonDisabled }}
     >
       <ModalContainer>
+        {/* Event name input */}
         <div className="row">
           <span className="label">Event Name</span>
           <Input
@@ -43,11 +52,15 @@ const EventCreationModal = ({ isModalOpen, setIsModalOpen, selectInfo }) => {
             }}
           />
         </div>
+
+        {/* All day event toggle */}
         <div className="row">
           <Checkbox checked={allDay} onChange={() => setAllDay(!allDay)}>
             All Day
           </Checkbox>
         </div>
+
+        {/* Date/time pickers shown only for non-all-day events */}
         {!allDay && (
           <>
             <div className="row">
@@ -76,6 +89,8 @@ const EventCreationModal = ({ isModalOpen, setIsModalOpen, selectInfo }) => {
             </div>
           </>
         )}
+
+        {/* Event color selector */}
         <div className="row">
           <span className="label">Color</span>
           <ColorSelect value={color} onChange={(color) => setColor(color)} />
